@@ -32,25 +32,24 @@ tarefas = []
 # =====================================================================
 
 def adicionar_tarefa(titulo, prioridade="media"):
-    """
-    Cria uma nova tarefa e adiciona à lista `tarefas`.
-
-    A tarefa deve ser um dicionário com as chaves:
-        - "titulo": o texto recebido no parâmetro `titulo`
-        - "concluida": deve começar como False
-        - "prioridade": o texto recebido no parâmetro `prioridade`
-
-    Depois de adicionar, exiba uma mensagem confirmando que a tarefa
-    foi criada (pode usar print).
-    """
-    # TODO (Aula 1): crie o dicionário da tarefa
-    # TODO (Aula 1): adicione o dicionário à lista `tarefas`
-    # TODO (Aula 1): exiba uma mensagem de confirmação
+    tarefa = {'titulo':titulo,'concluida':False,'prioridade':prioridade}
+    tarefas.append(tarefa)
+    print(f"Tarefa [{titulo}] adicionada.")
     # TODO (Aula 3): depois de implementar salvar_tarefas(), chame-a aqui
     pass
 
 
 def listar_tarefas():
+    if len(tarefas) < 1:
+        print("Lista vazia")
+        return
+    else:
+        for index, tarefa in enumerate(tarefas, start=1):
+            if tarefa['concluida'] == False:
+                status = "[ ]"
+            else:
+                status = "[X]"
+            print(f"{index} - {status} {tarefa['titulo']} (prioridade: {tarefa['prioridade']})")
     """
     Exibe todas as tarefas cadastradas na lista `tarefas`.
 
