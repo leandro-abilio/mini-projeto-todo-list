@@ -105,58 +105,30 @@ def editar_tarefa(indice, novo_titulo):
 # =====================================================================
 
 def salvar_tarefas():
-    """
-    Salva a lista `tarefas` no arquivo CSV definido em ARQUIVO_TAREFAS.
-
-    Use csv.DictWriter dentro de um bloco `with open(...)`.
-
-    Passos:
-        1. Abra o arquivo em modo de escrita ("w"), com newline=""
-           e encoding="utf-8"
-        2. Crie um csv.DictWriter passando o arquivo e fieldnames=CAMPOS_CSV
-        3. Chame writer.writeheader() para escrever a linha de cabeçalho
-        4. Chame writer.writerows(tarefas) para escrever todas as tarefas
-    """
-    # TODO (Aula 3): abra o arquivo em modo de escrita
-    # TODO (Aula 3): crie o csv.DictWriter com fieldnames=CAMPOS_CSV
-    # TODO (Aula 3): escreva o cabeçalho e as linhas
+    with open(ARQUIVO_TAREFAS, mode="w", newline="", encoding="utf-8") as arquivo:
+        escritor = csv.DictWriter(arquivo, fieldnames=CAMPOS_CSV)
+        escritor.writeheader()
+        escritor.writerows(tarefas)
     pass
 
 
 def carregar_tarefas():
-    """
-    Carrega as tarefas do arquivo CSV para a lista `tarefas`, caso o
-    arquivo já exista.
-
-    Regras:
-        - Use `global tarefas` no início da função, já que vamos
-          substituir a lista inteira.
-        - Se o arquivo não existir, apenas mantenha `tarefas` como uma
-          lista vazia (dica: os.path.exists(ARQUIVO_TAREFAS)).
-        - Se existir, abra o arquivo e use csv.DictReader para ler cada
-          linha como um dicionário.
-        - Atenção: tudo que vem do CSV é texto (string)! A coluna
-          "concluida" vai vir como a string "True" ou "False", não como
-          um valor booleano. Vocês precisam converter isso de volta:
-              linha["concluida"] = linha["concluida"] == "True"
-    """
     global tarefas
-    # TODO (Aula 3): verifique se o arquivo existe, senão mantenha tarefas = []
-    # TODO (Aula 3): abra o arquivo e use csv.DictReader para ler as linhas
-    # TODO (Aula 3): converta a coluna "concluida" de string para booleano
-    # TODO (Aula 3): monte a lista `tarefas` com os dicionários lidos
+    tarefas = []  # Limpa a lista antes de carregar
+    if os.path.exists(ARQUIVO_TAREFAS):
+        with open(ARQUIVO_TAREFAS, mode="r", newline="", encoding="utf-8") as arquivo:
+            leitor = csv.DictReader(arquivo)
+            for linha in leitor:
+                linha["concluida"] = linha["concluida"] == "True"
+                tarefas.append(linha)
     pass
 
 
 def listar_pendentes():
-    """
-    [DESAFIO] Exibe apenas as tarefas que ainda não foram concluídas.
-
-    Dica: list comprehension ajuda bastante aqui:
-        pendentes = [t for t in tarefas if not t["concluida"]]
-    """
-    # TODO (Aula 3): filtre as tarefas não concluídas
-    # TODO (Aula 3): exiba a lista filtrada (mensagem se estiver vazia também)
+    for index, tarefa in enumerate(tarefas, start=1):
+        if not tarefa['concluida']:
+            print(f"{index} - [ ] {tarefa['titulo']} (prioridade: {tarefa['prioridade']})")
+            
     pass
 
 
@@ -165,54 +137,16 @@ def listar_pendentes():
 # =====================================================================
 
 def exibir_menu():
-    """
-    Exibe as opções do menu principal no terminal.
-
-    Opções esperadas (versão final, Aula 3):
-        1. Adicionar tarefa
-        2. Listar tarefas
-        3. Concluir tarefa
-        4. Remover tarefa
-        5. Editar tarefa
-        6. Listar pendentes
-        7. Sair
-
-    Na Aula 1 vocês só vão ter as opções 1, 2 e Sair. Vão completando
-    as outras opções nas aulas seguintes.
-    """
     print("=== GERENCIADOR DE TAREFAS ===")
     print("1. Adicionar tarefa")
     print("2. Listar tarefas")
-    # TODO (Aula 1): adicione a opção "Sair" (vai virar a opção 7 ao final)
-    # TODO (Aula 2): adicione as opções 3 (Concluir), 4 (Remover), 5 (Editar)
-    # TODO (Aula 3): adicione a opção 6 (Listar pendentes) e renumere "Sair" para 7
-
+    print("3. Concluir tarefa")
+    print("4. Remover tarefa")
+    print("5. Editar tarefa")
+    print("6. Listar pendentes")
+    print("7. Sair")
 
 def main():
-    """
-    Função principal do programa.
-
-    Versão final esperada (Aula 3):
-        - Antes do loop começar, chame carregar_tarefas() para recuperar
-          as tarefas salvas anteriormente.
-        - Exiba o menu em loop (while True).
-        - "1": pedir o título da tarefa e chamar adicionar_tarefa()
-        - "2": chamar listar_tarefas()
-        - "3": listar tarefas, pedir o número da tarefa a concluir e
-          chamar concluir_tarefa(). Use try/except para tratar entradas
-          que não são números (ValueError).
-        - "4": o mesmo fluxo, mas chamando remover_tarefa()
-        - "5": pedir o número da tarefa e o novo título, chamar
-          editar_tarefa()
-        - "6": chamar listar_pendentes()
-        - "7": exibir mensagem de despedida e encerrar o loop (break)
-        - qualquer outra opção: avisar que é inválida
-
-    Vão completando esse fluxo aula a aula — na Aula 1 só "1", "2" e
-    sair (que será a última opção, mas pode comecar como "3").
-    """
-    # TODO (Aula 3): chame carregar_tarefas() antes do loop começar
-
     while True:
         exibir_menu()
         opcao = input("Escolha uma opcao: ")
@@ -224,11 +158,37 @@ def main():
         elif opcao == "2":
             listar_tarefas()
 
-        # TODO (Aula 1): implemente a opção de Sair (com break)
-        # TODO (Aula 2): implemente as opções de concluir, remover e editar
-        #                (cada uma com try/except para ValueError)
-        # TODO (Aula 3): implemente a opção de listar pendentes e
-        #                renumere a opção de sair
+        elif opcao == "3":
+            try:
+                listar_tarefas()
+                indice = int(input("Numero da tarefa a concluir: "))
+                concluir_tarefa(indice)
+            except ValueError:
+                print("Entrada invalida. Por favor, insira um numero.")
+        
+        elif opcao == "4":
+            try:
+                listar_tarefas()
+                indice = int(input("Numero da tarefa a remover: "))
+                remover_tarefa(indice)
+            except ValueError:
+                print("Entrada invalida. Por favor, insira um numero.")
+
+        elif opcao == "5":
+            try:
+                listar_tarefas()
+                indice = int(input("Numero da tarefa a editar: "))
+                novo_titulo = input("Novo titulo da tarefa: ")
+                editar_tarefa(indice, novo_titulo)
+            except ValueError:
+                print("Entrada invalida. Por favor, insira um numero.")
+
+        elif opcao == "6":
+            listar_pendentes()
+
+        elif opcao == "7":
+            print("Saindo do programa...")
+            break
 
         else:
             print("Opcao invalida, tente novamente.\n")
